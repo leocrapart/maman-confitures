@@ -37,7 +37,7 @@ export default {
 
 <style>
 body {
-  background-image: url('/grass-background.jpg');
+  background-image: url('https://ik.imagekit.io/pl6zwucqxr/grass-background_tveE3-0zCxI.jpg');
   background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
