@@ -6,7 +6,7 @@
 		<div class="flex justify-center py-4"> 
 			<div class="w-3/4">
 				<div class="relative" style="padding-bottom: 100%">
-					<img src="/img/confiture-abricot.jpg"
+					<img src="https://ik.imagekit.io/pl6zwucqxr/confiture-abricot_GbG9v0GWV.jpg"
 					class="absolute h-full w-full object-cover rounded-lg">
 				</div>
 			</div>
