@@ -1,5 +1,5 @@
 <template>
-	<router-link :to="product.url">
+	<router-link :to="admin ? '/admin/'+ product.url : product.url">
 		<div class="bg-gray-200 bg-opacity-75 flex flex-col rounded">
 			<div class="relative rounded-t-lg" style="padding-bottom: 50%">
 				<img :src="product.imagePath" alt="No image corresponding"
@@ -14,7 +14,11 @@
 <script>
 export default {
 	props: {
-		product: Object
+		product: Object,
+		admin: {
+			default: false,
+			type: Boolean
+		}
 	}
 }
 </script>
