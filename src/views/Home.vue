@@ -1,8 +1,14 @@
 <template>
   <div>
 	<PresentationCard class="m-4" />
+
 	<div class="grid grid-cols-2 gap-4 m-4">
-		<ProductCard v-for="i of array" :key="i" imagePath="/img/confiture-figues.jpg" title="Figues"/>
+		<ProductCard imagePath="/img/confiture-figues.jpg" title="Figues" url="/figues"/>
+		<ProductCard imagePath="/img/confiture-banane.jpg" title="Banane" url="/banane"/>
+		<ProductCard imagePath="/img/confiture-cerise.jpg" title="Cerise" url="/cerise"/>
+		<ProductCard imagePath="/img/confiture-framboise.jpg" title="Framboise" url="/framboise"/>
+		<ProductCard imagePath="/img/confiture-abricot.jpg" title="Abricot" url="/abricot"/>
+
 	</div>
 
   </div>
