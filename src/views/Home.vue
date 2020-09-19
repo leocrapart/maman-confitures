@@ -1,17 +1,24 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+	<PresentationCard class="m-4" />
+	<div class="grid grid-cols-2 gap-4 m-4">
+		<ProductCard imagePath="/img/confiture-figues.jpg" title="noix de coco"/>
+		<ProductCard imagePath="/img/confiture-figues.jpg" title="noix de coco"/>
+		<ProductCard imagePath="/img/confiture-figues.jpg" title="noix de coco"/>
+		<ProductCard imagePath="/img/confiture-figues.jpg" title="noix de coco"/>
+	</div>
+
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import PresentationCard from '@/components/PresentationCard'
+import ProductCard from '@/components/ProductCard'
 
 export default {
   components: {
-    HelloWorld
+	PresentationCard,
+	ProductCard
   }
 }
 </script>
