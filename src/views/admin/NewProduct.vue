@@ -94,7 +94,6 @@
 				
 
 			</form>
-			<button @click="logProduct">Click me</button>
 		</div>
 		
 	</div>
