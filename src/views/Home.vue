@@ -8,6 +8,11 @@
 		:product="product" />
 		
 	</div>
+	<router-link to="/admin" >
+		<div class="text-sm text-green-700">
+			-
+		</div>
+	</router-link>
 
   </div>
 </template>
