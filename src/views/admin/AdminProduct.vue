@@ -9,7 +9,7 @@
 					</label>
 					<input type="text" id="title" name="title" 
 					class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.title">
+					v-model="product.title">
 				</div>
 
 				<div class="mb-4">
@@ -18,7 +18,7 @@
 					</label>
 					<input type="text" id="imagePath" name="imagePath" 
 					class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.imagePath">
+					v-model="product.imagePath">
 				</div>
 
 				<div class="mb-4">
@@ -27,7 +27,7 @@
 					</label>
 					<input type="text" id="description" name="description" 
 					class="shadow appearance-none border w-full rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.description">
+					v-model="product.description">
 				</div>
 
 				<div class="mb-4">
@@ -36,11 +36,11 @@
 					</label>
 					<input type="text" id="composition" name="composition" 
 					class="shadow appearance-none border w-full rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.composition">
+					v-model="product.composition">
 				</div>
 
 				<div v-for="(variant, index) of product.variants"
-					:key="variant.weight"
+					:key="index"
 					class="py-4" 
 					>
 					<div class="text-md font-bold text-gray-700 mb-2">Variante {{ index+1 }}</div>
@@ -51,7 +51,7 @@
 						</label>
 						<input type="text" id="weight" name="weight" 
 						class="shadow appearance-none border w-full rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-						:value="variant.weight">
+						v-model="variant.weight">
 					</div>
 
 					<div class="mb-4">
@@ -59,8 +59,11 @@
 						Prix
 						</label>
 						<input type="number" id="weight" name="weight" 
-						class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-						:value="variant.price">
+						class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+						step="0.01"
+						min="0.00"
+						max="100.00" 
+						v-model="variant.price">
 					</div>
 
 					
@@ -73,21 +76,24 @@
 					</label>
 					<input type="text" id="url" name="url" 
 					class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.url">
+					v-model="product.url">
 				</div>
 
 				<div class="flex justify-between">
-					<button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+					<div class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+					@click="updateProduct">
 						Enregistrer
-					</button>
+					</div>
 
-					<button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+					<div class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit"
+					@click="deleteProduct">
 						Supprimer
-					</button>
+					</div>
 				</div>
 				
 
 				
+				<div>{{message}}</div>
 
 			</form>
 		</div>
@@ -97,15 +103,51 @@
 </template>
 
 <script>
-import { useRoute } from 'vue-router'
-import { getProductByUrl } from '@/composables/useFirestore'
+import { useRoute, useRouter } from 'vue-router'
+import { getProductByUrl, updateProductByUrl, deleteProductByUrl } from '@/composables/useFirestore'
+import { watch, toRaw, reactive, ref } from 'vue'
 
 export default {
 	setup() {
 		const route = useRoute()
-		const product = getProductByUrl(route.params.id)
+		const router = useRouter()
+		const productFromDb = getProductByUrl(route.params.id)
 
-		return { route, product }
+		const product = reactive({})
+
+		watch(productFromDb, (newProduct) => {
+			const rawVariants = (toRaw(newProduct.variants))
+			const rawProduct = {
+				...newProduct,
+				variants: rawVariants
+			}
+			for (let key of Object.keys(rawProduct)) {
+				product[key] = rawProduct[key]
+			}
+		})
+
+		const updateProduct = () => {
+			product.variants.forEach(variant => {
+				variant.price = Number(variant.price)
+			})
+
+			const productForDb = toRaw(product)
+			const url = route.params.id
+
+			updateProductByUrl(productForDb, url)
+			message.value = "Produit mis a jour"
+		}
+
+
+		const deleteProduct = () => {
+			const url = route.params.id
+			deleteProductByUrl(url)
+			router.push('/admin')
+		}
+
+		const message = ref('')
+
+		return { route, product, deleteProduct, updateProduct, message }
 	}
 
 }

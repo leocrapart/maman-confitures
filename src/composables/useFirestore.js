@@ -38,3 +38,30 @@ export function getProductByUrl(url) {
 
 	return product
 }
+
+export function addProduct(product) {
+	db.collection('products').add(product)
+}
+
+export function updateProductByUrl(newProduct, url) {
+	db.collection('products').where('url', '==', url)
+		.limit(1).get()
+		.then(snap => {
+			snap.forEach(doc => {
+				const id = doc.id
+				db.collection('products').doc(id).set(newProduct)
+
+			})
+		})
+}
+
+export function deleteProductByUrl(url) {
+	db.collection('products').where('url', '==', url)
+		.limit(1).get()
+		.then(snap => {
+			snap.forEach(doc => {
+				const id = doc.id
+				db.collection('products').doc(id).delete()
+			})
+		})
+}

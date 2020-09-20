@@ -2,14 +2,15 @@
 	<div id="admin" class="h-screen">
 		<div class="p-8">
 			<form
-			class="p-4 rounded bg-gray-200">
+			class="p-4 rounded bg-gray-200"
+			>
 				<div class="mb-4">
 					<label class="block text-gray-700 text-sm font-bold mb-2" for="title">
 					Titre
 					</label>
 					<input type="text" id="title" name="title" 
 					class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.title">
+					v-model="title">
 				</div>
 
 				<div class="mb-4">
@@ -18,7 +19,7 @@
 					</label>
 					<input type="text" id="imagePath" name="imagePath" 
 					class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.imagePath">
+					v-model="imagePath">
 				</div>
 
 				<div class="mb-4">
@@ -27,7 +28,7 @@
 					</label>
 					<input type="text" id="description" name="description" 
 					class="shadow appearance-none border w-full rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.description">
+					v-model="description">
 				</div>
 
 				<div class="mb-4">
@@ -36,11 +37,11 @@
 					</label>
 					<input type="text" id="composition" name="composition" 
 					class="shadow appearance-none border w-full rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.composition">
+					v-model="composition">
 				</div>
 
-				<div v-for="(variant, index) of product.variants"
-					:key="variant.weight"
+				<div v-for="(variant, index) of variants"
+					:key="index "
 					class="py-4" 
 					>
 					<div class="text-md font-bold text-gray-700 mb-2">Variante {{ index+1 }}</div>
@@ -51,7 +52,8 @@
 						</label>
 						<input type="text" id="weight" name="weight" 
 						class="shadow appearance-none border w-full rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-						:value="variant.weight">
+						v-model="variant.weight"
+						@input="focus">
 					</div>
 
 					<div class="mb-4">
@@ -60,7 +62,10 @@
 						</label>
 						<input type="number" id="weight" name="weight" 
 						class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-						:value="variant.price">
+						step="0.01"
+						min="0.00"
+						max="100.00"
+						v-model="variant.price">
 					</div>
 
 					
@@ -69,17 +74,19 @@
 
 				<div class="mb-8">
 					<label class="block text-gray-700 text-sm font-bold mb-2" for="url">
-					Lien affiché
+					Lien affiché (doit être unique)
 					</label>
 					<input type="text" id="url" name="url" 
 					class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-					:value="product.url">
+					v-model="url">
 				</div>
 
 				<div class="flex justify-between">
-					<button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+					<div class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+					@click="onSubmit"
+					>
 						Enregistrer
-					</button>
+					</div>
 
 				</div>
 				
@@ -87,6 +94,7 @@
 				
 
 			</form>
+			<button @click="logProduct">Click me</button>
 		</div>
 		
 	</div>
@@ -94,22 +102,43 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import {  reactive, toRefs, toRaw } from 'vue'
+import { useRouter } from 'vue-router'
+import { addProduct } from '@/composables/useFirestore'
+
 export default {
 	setup() {
-		const product = ref({
+		const router = useRouter()
+
+		const product = reactive({
 			title: 'Nouveau titre',
 			imagePath: 'https://image.com/confiture.jpg',
 			description: 'La nouvelle confiture de kiwi ...',
 			composition: '60% de fruits, 40% de sucre, pectine végétale',
-			variants: [
-				{weight: '340g', price: '5.43'},
+			variants: reactive([
+				{weight: '340g', price: '5.32'},
 				{weight: '230g', price: '3.59'}
-			],
+			]),
 			url: 'kiwi'
 		})
 
-		return { product }
+		const onSubmit = () => {
+			product.variants.forEach(variant => {
+				variant.price = Number(variant.price)
+			})
+			const variantsForDb = toRaw(product.variants)
+
+			const productForDb = {
+				...product,
+				variants: variantsForDb
+			}
+
+			
+			addProduct(productForDb)
+			router.push("/admin")		
+		}
+
+		return { ...toRefs(product), onSubmit }
 	}
 }
 	
