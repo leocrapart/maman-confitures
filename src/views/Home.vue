@@ -32,7 +32,6 @@ export default {
   },
   setup() {
 	const products = getProducts()
-
 	return { products }
   }
 }
